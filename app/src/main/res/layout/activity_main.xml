@@ -55,8 +55,8 @@
         android:id="@+id/views"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="48dp"
         android:src="@drawable/eye"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2" />
@@ -65,7 +65,7 @@
         android:id="@+id/likes"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="8dp"
         android:src="@drawable/like"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2" />
@@ -74,8 +74,8 @@
         android:id="@+id/countlikes"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginLeft="35dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2"
         tools:text="10" />
@@ -84,8 +84,8 @@
         android:id="@+id/countreposts"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginLeft="100dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginLeft="104dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2"
         tools:text="10" />
@@ -94,8 +94,8 @@
         android:id="@+id/countviews"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginTop="7dp"
-        android:layout_marginRight="-10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="-8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2"
         tools:text="10K" />
@@ -104,8 +104,8 @@
         android:id="@+id/reposts"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginLeft="72dp"
+        android:layout_marginTop="8dp"
         android:src="@drawable/repost"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2" />
