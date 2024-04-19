@@ -1,27 +1,51 @@
-package ru.netology.nmedia
+package ru.netology.nmedia;
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.isDigitsOnly
+import ru.netology.nmedia.Post
+import ru.netology.nmedia.PostViewModel
+import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.ActivityMainBinding
 
-data class Post(
-    val id: Long,
-    val author: String,
-    val content: String,
-    val published: String,
-    var countlikes: Int,
-    var countreposts: Int,
-    var countviews: Int,
-    var likedByMe: Boolean = false,
-    var repostedByMe: Boolean = false
-)
-
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private val viewModel: PostViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        viewModel.post.observe(this) { post ->
+            binding.apply {
+                countreposts.text = formatCount(post.countreposts)
+                countviews.text = formatCount(post.countviews)
+                author.text = post.author
+                published.text = post.published
+                content.text = post.content
+                countlikes.text = formatCount(post.countlikes)
+
+                likes.setOnClickListener {
+                    println("На лайк нажали")
+                    post.likedByMe = !post.likedByMe
+                    if (post.likedByMe) {
+                        post.countlikes++
+                    } else {
+                        post.countlikes--
+                    }
+                    countlikes.text = formatCount(post.countlikes)
+                    likes.setImageResource(if (post.likedByMe) R.drawable.liked else R.drawable.like)
+                }
+
+                reposts?.setOnClickListener {
+                    post.repostedByMe = !post.repostedByMe
+                    if (post.repostedByMe) {
+                        post.countreposts++
+                    }
+                    countreposts.text = formatCount(post.countreposts)
+                }
+            }
+        }
 
         val post = Post(
             id = 1,
@@ -35,44 +59,7 @@ class MainActivity : AppCompatActivity() {
             repostedByMe = false,
         )
 
-        with(binding) {
-            countreposts.text = formatCount(post.countreposts)
-            countviews.text = formatCount(post.countviews)
-            author.text = post.author
-            published.text = post.published
-            content.text = post.content
-
-            countlikes.text = formatCount(post.countlikes)
-
-            likes.setOnClickListener {
-                println("На лайк нажали")
-                post.likedByMe = !post.likedByMe
-                if (post.likedByMe) {
-                    post.countlikes++
-                } else {
-                    post.countlikes--
-                }
-                countlikes.text = formatCount(post.countlikes)
-                likes.setImageResource(if (post.likedByMe) R.drawable.liked else R.drawable.like)
-            }
-
-            reposts?.setOnClickListener {
-                println("На репост нажали")
-                post.repostedByMe = !post.repostedByMe
-                if (post.repostedByMe) {
-                    post.countreposts++
-                }
-                countreposts.text = formatCount(post.countreposts)
-            }
-
-            root.setOnClickListener {
-                println("На root нажали")
-            }
-
-            avatar.setOnClickListener {
-                println("На аватарку нажали")
-            }
-        }
+        viewModel.setPost(post)
     }
 
     private fun formatCount(count: Int): String {
