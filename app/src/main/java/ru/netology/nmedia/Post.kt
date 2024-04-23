@@ -1,5 +1,7 @@
 package ru.netology.nmedia
 
+import androidx.lifecycle.MutableLiveData
+
 data class Post(
     val id: Long,
     val author: String,
@@ -8,6 +10,6 @@ data class Post(
     val countlikes: Int,
     val countreposts: Int,
     val countviews: Int,
-    val likedByMe: Boolean = false,
-    val repostedByMe: Boolean = false
+    val likedByMe: Boolean,
+    val repostedByMe: Boolean,
 )

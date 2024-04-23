@@ -1,7 +1,9 @@
 package ru.netology.nmedia
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 
 class PostRepository : PostRepositoryInterface {
-    private val posts = mutableMapOf<Long, Post>()
+    private val posts = HashMap<Long, Post>()
 
     init {
         val post = Post(
@@ -20,6 +22,34 @@ class PostRepository : PostRepositoryInterface {
 
     override fun getPost(id: Long): Post {
         return posts[id] ?: throw IllegalArgumentException("Пост не найден")
+    }
+
+    fun getPostLikes(id: Long): LiveData<Int> {
+        val likes = MutableLiveData<Int>()
+        val post = posts[id] ?: return likes
+        likes.value = post.countlikes
+        return likes
+    }
+
+    fun getPostReposts(id: Long): LiveData<Int> {
+        val reposts = MutableLiveData<Int>()
+        val post = posts[id] ?: return reposts
+        reposts.value = post.countreposts
+        return reposts
+    }
+
+    fun getPostLikedByMe(id: Long): LiveData<Boolean> {
+        val likedByMe = MutableLiveData<Boolean>()
+        val post = posts[id] ?: return likedByMe
+        likedByMe.value = post.likedByMe
+        return likedByMe
+    }
+
+    fun getPostRepostedByMe(id: Long): LiveData<Boolean> {
+        val repostedByMe = MutableLiveData<Boolean>()
+        val post = posts[id] ?: return repostedByMe
+        repostedByMe.value = post.repostedByMe
+        return repostedByMe
     }
 
     override fun likePost(post: Post): Post {
