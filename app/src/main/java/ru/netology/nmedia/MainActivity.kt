@@ -4,38 +4,25 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.databinding.ActivityMainBinding
+import ru.netology.nmedia.databinding.PostcardBinding
+import ru.netology.nmedia.PostsAdapter
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-    private val viewModel: PostViewModel by viewModels {
-        PostViewModelFactory(PostRepository())
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel.loadPost(1)
-
-        viewModel.post.observe(this) { post ->
-            binding.apply {
-                countreposts.text = formatCount(post.countreposts)
-                countviews.text = formatCount(post.countviews)
-                author.text = post.author
-                published.text = post.published
-                content.text = post.content
-                countlikes.text = formatCount(post.countlikes)
-
-                likes.setOnClickListener {
-                    viewModel.likePost()
-                    likes.setImageResource(if (post.likedByMe) R.drawable.like else R.drawable.liked)
-                }
-
-                reposts?.setOnClickListener {
-                    viewModel.repostPost()
-                }
-            }
+        val viewModel: PostViewModel by viewModels {
+            PostViewModelFactory(PostRepository())
+        }
+        val adapter = PostsAdapter(
+            onLikeListener = { viewModel.likeById(it.id) },
+            onRepostListener = { viewModel.repostById(it.id) }
+        )
+        binding.list.adapter = adapter
+        viewModel.data.observe(this) { posts ->
+            adapter.submitList(posts)
         }
     }
 
