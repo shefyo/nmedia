@@ -1,4 +1,5 @@
 package ru.netology.nmedia
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
@@ -32,7 +33,7 @@ class PostRepository : PostRepositoryInterface {
     override fun getPost(id: Long): Post {
         return posts.find { it.id == id } ?: throw IllegalArgumentException("Пост не найден")
     }
-
+    
 
     override fun likeById(id: Long) {
         posts = posts.map { post ->
