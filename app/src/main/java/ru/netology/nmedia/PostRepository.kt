@@ -1,4 +1,5 @@
 package ru.netology.nmedia
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
@@ -53,13 +54,19 @@ class PostRepository : PostRepositoryInterface {
     }
 
     override fun likePost(post: Post): Post {
-        val updatedPost = post.copy(likedByMe = !post.likedByMe, countlikes = if (post.likedByMe) post.countlikes - 1 else post.countlikes + 1)
+        val updatedPost = post.copy(
+            likedByMe = !post.likedByMe,
+            countlikes = if (post.likedByMe) post.countlikes - 1 else post.countlikes + 1
+        )
         posts[post.id] = updatedPost
         return updatedPost
     }
 
     override fun repostPost(post: Post): Post {
-        val updatedPost = post.copy(repostedByMe = !post.repostedByMe, countreposts = if (post.repostedByMe) post.countreposts +1 else post.countreposts + 0)
+        val updatedPost = post.copy(
+            repostedByMe = !post.repostedByMe,
+            countreposts = if (post.repostedByMe) post.countreposts + 1 else post.countreposts + 0
+        )
         posts[post.id] = updatedPost
         return updatedPost
     }
