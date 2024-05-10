@@ -1,4 +1,5 @@
 package ru.netology.nmedia
+
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
@@ -38,8 +39,10 @@ class PostRepository : PostRepositoryInterface {
             likedByMe = !post.likedByMe,
             countlikes = if (post.likedByMe) post.countlikes - 1 else post.countlikes + 1
         )
+
         posts[posts.indexOf(post)] = updatedPost
         data.value = posts
+
         return updatedPost
     }
 
@@ -48,6 +51,7 @@ class PostRepository : PostRepositoryInterface {
             repostedByMe = !post.repostedByMe,
             countreposts = if (post.repostedByMe) post.countreposts + 1 else post.countreposts + 0
         )
+
         posts[posts.indexOf(post)] = updatedPost
         data.value = posts
         return updatedPost
