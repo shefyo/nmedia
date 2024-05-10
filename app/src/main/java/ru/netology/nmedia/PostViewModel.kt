@@ -18,16 +18,5 @@ class PostViewModel(repository: PostRepositoryInterface) : ViewModel() {
         _post.value = post
     }
 
-    fun likePost() {
-        val post = _post.value ?: return
-        val updatedPost = repository.likePost(post)
-        _post.value = updatedPost
-    }
-
-    fun repostPost() {
-        val post = _post.value ?: return
-        val updatedPost = repository.repostPost(post)
-        _post.value = updatedPost
-    }
 
 }

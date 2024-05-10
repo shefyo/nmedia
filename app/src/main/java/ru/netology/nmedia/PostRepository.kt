@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
 class PostRepository : PostRepositoryInterface {
-    private var posts = mutableListOf(
+    private var posts = listOf(
         Post(
             id = 1,
             author = "Нетология. Университет интернет-профессий будущего",
@@ -33,56 +33,35 @@ class PostRepository : PostRepositoryInterface {
     override fun getPost(id: Long): Post {
         return posts.find { it.id == id } ?: throw IllegalArgumentException("Пост не найден")
     }
-
-    override fun likePost(post: Post): Post {
-        val updatedPost = post.copy(
-            likedByMe = !post.likedByMe,
-            countlikes = if (post.likedByMe) post.countlikes - 1 else post.countlikes + 1
-        )
-
-        posts[posts.indexOf(post)] = updatedPost
-        data.value = posts
-
-        return updatedPost
-    }
-
-    override fun repostPost(post: Post): Post {
-        val updatedPost = post.copy(
-            repostedByMe = !post.repostedByMe,
-            countreposts = if (post.repostedByMe) post.countreposts + 1 else post.countreposts + 0
-        )
-
-        posts[posts.indexOf(post)] = updatedPost
-        data.value = posts
-        return updatedPost
-    }
+    
 
     override fun likeById(id: Long) {
-            posts = posts.map { post ->
-                if (post.id != id) post else {
-                    val updatedPost = post.copy(
-                        likedByMe = !post.likedByMe,
-                        countlikes = if (post.likedByMe) post.countlikes - 1 else post.countlikes + 1
-                    )
-                    data.value = posts
-                    updatedPost
-                }
-            }.toMutableList()
-            data.value = posts
+        posts = posts.map { post ->
+            if (post.id == id) {
+                post.copy(
+                    likedByMe = !post.likedByMe,
+                    countlikes = if (post.likedByMe) post.countlikes - 1 else post.countlikes + 1
+                )
+            } else {
+                post
+            }
         }
+        data.value = posts
+    }
+
     override fun repostById(id: Long) {
         posts = posts.map { post ->
-            if (post.id != id) post else {
-                val updatedPost = post.copy(
+            if (post.id == id) {
+                post.copy(
                     repostedByMe = !post.repostedByMe,
                     countreposts = if (post.repostedByMe) post.countreposts + 1 else post.countreposts + 0
                 )
-                data.value = posts
-                updatedPost
+            } else {
+                post
             }
-        }.toMutableList()
+        }
         data.value = posts
     }
 
-    override fun getAll(): MutableLiveData<MutableList<Post>> = data
+    override fun getAll(): MutableLiveData<List<Post>> = data
 }
