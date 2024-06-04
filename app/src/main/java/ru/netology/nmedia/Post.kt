@@ -1,7 +1,5 @@
 package ru.netology.nmedia
 
-import androidx.lifecycle.MutableLiveData
-
 data class Post(
     val id: Long,
     val author: String,
