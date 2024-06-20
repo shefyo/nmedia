@@ -17,9 +17,7 @@ class PostViewHolder(
             countviews.text = post.countviews.toString()
             countlikes.text = formatCount(post.countlikes)
             countreposts.text = formatCount(post.countreposts)
-            likes.setImageResource(
-                if (post.likedByMe) R.drawable.liked else R.drawable.like
-            )
+            likes.isChecked = post.likedByMe
             likes.setOnClickListener {
                 onInteractionListener.onLike(post)
             }

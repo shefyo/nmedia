@@ -5,5 +5,20 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
+
+
     <style name="Theme.Nmedia" parent="Base.Theme.Nmedia" />
+
+    <style name="Widget.App.LikeCheckBox" parent="Widget.MaterialComponents.Button.TextButton.Icon">
+        <item name = "iconTint">@drawable/like_checkbox_tint</item>
+    </style>
+
+    <style name="Widget.App.ShareButton" parent="Widget.MaterialComponents.Button.TextButton.Icon">
+        <item name="iconTint">@drawable/share_button_tint</item>
+    </style>
+
+    <style name="Widget.App.OptionsButton" parent="Widget.MaterialComponents.Button.TextButton.Icon">
+        <item name="iconTint">@drawable/options_button_tint</item>
+
+    </style>
 </resources>

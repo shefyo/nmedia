@@ -8,6 +8,7 @@
     tools:context=".MainActivity">
 
 
+
     <ImageView
         android:id="@+id/avatar"
         android:layout_width="48dp"
@@ -33,6 +34,16 @@
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Нетология. Университет интернет-профессий" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/menu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:icon="@drawable/baseline_more_vert_24"
+        android:contentDescription="Menu"
+        style="@style/Widget.App.OptionsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/published"
         android:layout_width="0dp"
@@ -43,13 +54,7 @@
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:text="21 мая в 18:36" />
 
-    <ImageView
-        android:id="@+id/menu"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/baseline_more_vert_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+
 
     <ImageView
         android:id="@+id/views"
@@ -61,12 +66,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2" />
 
-    <ImageView
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/likes"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="-4dp"
+        android:layout_marginTop="-4dp"
+        android:checkable="true"
+        android:contentDescription="Like"
+        app:icon="@drawable/likedrawable"
+        style = "@style/Widget.App.LikeCheckBox"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2" />
 
@@ -100,13 +109,16 @@
         app:layout_constraintTop_toTopOf="@id/barrier2"
         tools:text="10K" />
 
-    <ImageView
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/reposts"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:icon="@drawable/repost"
+        android:contentDescription="Share"
         android:layout_marginLeft="72dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/repost"
+        android:layout_marginTop="-4dp"
+        style="@style/Widget.App.ShareButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2" />
 
@@ -146,5 +158,4 @@
 каждом уже есть сила, которая заставляет хотеть
 больше, целиться выше, бежать быстрее. Наша миссия
 — помочь встать на путь роста и начать цепочку перемен → http://netolo.gy/fyb" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
