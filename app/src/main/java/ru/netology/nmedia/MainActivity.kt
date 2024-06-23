@@ -1,5 +1,6 @@
 package ru.netology.nmedia
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -35,6 +36,14 @@ class MainActivity : AppCompatActivity() {
 
             override fun onRepost(post: Post) {
                 viewModel.repostById(post.id)
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, post.content)
+                }
+
+                val shareIntent = Intent.createChooser(intent, "Share post")
+                startActivity(shareIntent)
             }
 
         })

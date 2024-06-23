@@ -77,27 +77,10 @@
         app:icon="@drawable/likedrawable"
         style = "@style/Widget.App.LikeCheckBox"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/barrier2" />
-
-    <TextView
-        android:id="@+id/countlikes"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/barrier2"
-        tools:text="10" />
+        android:text="10"/>
 
-    <TextView
-        android:id="@+id/countreposts"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginLeft="104dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/barrier2"
-        tools:text="10" />
+
 
     <TextView
         android:id="@+id/countviews"
@@ -120,7 +103,8 @@
         android:layout_marginTop="-4dp"
         style="@style/Widget.App.ShareButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/barrier2" />
+        app:layout_constraintTop_toTopOf="@id/barrier2"
+        android:text="10" />
 
 
     <androidx.constraintlayout.widget.Barrier

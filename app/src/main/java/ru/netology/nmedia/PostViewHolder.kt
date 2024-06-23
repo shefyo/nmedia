@@ -15,8 +15,8 @@ class PostViewHolder(
             published.text = post.published
             content.text = post.content
             countviews.text = post.countviews.toString()
-            countlikes.text = formatCount(post.countlikes)
-            countreposts.text = formatCount(post.countreposts)
+            likes.text = formatCount(post.countlikes)
+            reposts.text = formatCount(post.countreposts)
             likes.isChecked = post.likedByMe
             likes.setOnClickListener {
                 onInteractionListener.onLike(post)
