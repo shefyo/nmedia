@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Nmedia</string>
     <string name="nmedia">NMedia!</string>
+    <string name="title_activity_intent_handler">IntentHandlerActivity</string>
+    <string name="title_activity_new_post">NewPostActivity</string>
+    <string name="title_activity_edit_post">EditPostActivity</string>
 </resources>

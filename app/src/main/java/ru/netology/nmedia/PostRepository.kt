@@ -14,6 +14,7 @@ class PostRepository : PostRepositoryInterface {
             countreposts = 0,
             countviews = 1,
             likedByMe = false,
+            video = null,
             repostedByMe = false
         ), Post(
             id = nextId++,
@@ -24,6 +25,7 @@ class PostRepository : PostRepositoryInterface {
             countreposts = 0,
             countviews = 1,
             likedByMe = false,
+            video = null,
             repostedByMe = false
         )
     )

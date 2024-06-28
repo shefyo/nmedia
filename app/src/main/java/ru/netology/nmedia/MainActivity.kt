@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.launch
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import ru.netology.nmedia.databinding.ActivityMainBinding
@@ -18,10 +19,35 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+
         val viewModel: PostViewModel by viewModels {
             PostViewModelFactory(PostRepository())
         }
-        val adapter = PostsAdapter(object: OnInteractionListener {
+
+        fun handleIntent(intent: Intent?) {
+            if (intent?.action == Intent.ACTION_VIEW){
+                val videoUrl = intent.dataString
+
+                if (!videoUrl.isNullOrEmpty()) {
+
+                }
+            }
+        }
+
+        handleIntent(intent)
+
+
+        val editPostLauncher = registerForActivityResult(EditPostContract) {
+            var result = it ?: return@registerForActivityResult
+            viewModel.changeContentAndSave(result)
+        }
+
+        val newPostLauncher = registerForActivityResult(NewPostContract) {
+            var result = it ?: return@registerForActivityResult
+            viewModel.changeContentAndSave(result)
+        }
+        val adapter = PostsAdapter(object : OnInteractionListener {
             override fun onLike(post: Post) {
                 viewModel.likeById(post.id)
             }
@@ -31,7 +57,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onEdit(post: Post) {
-                viewModel.edit(post)
+                editPostLauncher.launch(post.content)
             }
 
             override fun onRepost(post: Post) {
@@ -57,46 +83,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.edited.observe(this) { post ->
-            with(binding) {
-                if (post.id == 0L) {
-                    group.visibility = View.GONE
-                } else {
-                    group.visibility = View.VISIBLE
-                    content.setText(post.content)
-                    content.focusAndShowKeyboard()
-                }
-            }
-        }
-
-        binding.cancel.setOnClickListener {
-            viewModel.cancelEditing()
-            binding.content.setText("")
-            AndroidUtils.hideKeyboard(binding.content)
-            binding.content.clearFocus()
-        }
-
         binding.save.setOnClickListener {
-            val content = binding.content.text.toString()
-            if (content.isBlank()) {
-                Toast.makeText(this, "Error empty content", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            viewModel.changeContentAndSave(content)
-            binding.content.setText("")
-            binding.group.visibility = View.GONE
-            AndroidUtils.hideKeyboard(binding.content)
-            binding.content.clearFocus()
-        }
-    }
+           newPostLauncher.launch()
+   }
 
-    private fun formatCount(count: Int): String {
-        return when {
-            count > 1000000 -> "${count / 1000000}.${(count % 1000000) / 100000}M"
-            count == 1000000 -> "${count / 1000000}M"
-            count >= 10000 -> "${count / 1000}K"
-            count >= 1000 -> "${count / 1000}K"
-            else -> count.toString()
+        fun formatCount(count: Int): String {
+            return when {
+                count > 1000000 -> "${count / 1000000}.${(count % 1000000) / 100000}M"
+                count == 1000000 -> "${count / 1000000}M"
+                count >= 10000 -> "${count / 1000}K"
+                count >= 1000 -> "${count / 1000}K"
+                else -> count.toString()
+            }
         }
     }
 }

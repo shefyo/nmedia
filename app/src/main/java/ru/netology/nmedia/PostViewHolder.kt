@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.netology.nmedia.databinding.PostcardBinding
 
 class PostViewHolder(
-    private val binding: PostcardBinding,
+    val binding: PostcardBinding,
     private val onInteractionListener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
 

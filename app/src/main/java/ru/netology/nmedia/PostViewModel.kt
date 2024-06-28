@@ -13,6 +13,7 @@ private val empty = Post(
     countlikes = 0,
     countreposts = 0,
     countviews = 1,
+    video = null,
     repostedByMe = false
 )
 
