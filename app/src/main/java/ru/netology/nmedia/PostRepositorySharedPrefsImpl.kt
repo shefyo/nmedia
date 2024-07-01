@@ -1,10 +1,23 @@
 package ru.netology.nmedia
 
+import android.content.Context
+import android.provider.Settings.Global.putString
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.util.Collections.list
 
-class PostRepository : PostRepositoryInterface {
+class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface {
+
+    companion object {
+        private const val KEY = "posts"
+    }
+    private val gson = Gson()
+    private val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+    private val typeToken = TypeToken.getParameterized(List::class.java, Post::class.java).type
     private var nextId: Long = 0
-    private var posts = listOf(
+    private var posts = emptyList<Post>()
+    private var deafultPosts = listOf(
         Post(
             id = nextId++,
             author = "Нетология. Университет интернет-профессий будущего",
@@ -14,7 +27,7 @@ class PostRepository : PostRepositoryInterface {
             countreposts = 0,
             countviews = 1,
             likedByMe = false,
-            video = null,
+            video = "https://youtu.be/ix280JoeyBs?si=K_aiKhiI49y7H6mH",
             repostedByMe = false
         ), Post(
             id = nextId++,
@@ -25,15 +38,44 @@ class PostRepository : PostRepositoryInterface {
             countreposts = 0,
             countviews = 1,
             likedByMe = false,
-            video = null,
+            video = "https://youtu.be/ix280JoeyBs?si=K_aiKhiI49y7H6mH",
             repostedByMe = false
         )
-    )
+    ).reversed()
 
     private val data = MutableLiveData(posts)
 
+    init {
+        val savedPosts = prefs.getString(KEY, null)?.let {
+            gson.fromJson(it, typeToken) as List<Post>
+        } ?: emptyList()
+
+        nextId = (savedPosts.maxByOrNull { it.id }?.id ?: 0) + 1
+
+        posts = (deafultPosts + savedPosts).distinctBy { it.id }.sortedByDescending { it.id }
+
+        data.value = posts
+        sync()
+    }
+
+
+
+    private fun sync() {
+        with(prefs.edit()) {
+            putString(KEY, gson.toJson(posts))
+            apply()
+        }
+    }
+
     override fun getPost(id: Long): Post {
         return posts.find { it.id == id } ?: throw IllegalArgumentException("Пост не найден")
+        sync()
+    }
+
+    fun checkVideo(post: Post) {
+        if(post.video.toString().contains("https://youtu.be/")) {
+            post.video != null
+        }
     }
 
 
@@ -49,6 +91,7 @@ class PostRepository : PostRepositoryInterface {
             }
         }
         data.value = posts
+        sync()
     }
 
     override fun repostById(id: Long) {
@@ -63,11 +106,13 @@ class PostRepository : PostRepositoryInterface {
             }
         }
         data.value = posts
+        sync()
     }
 
     override fun removeById(id: Long) {
         posts = posts.filter { it.id != id }
         data.value = posts
+        sync()
     }
 
     override fun save(post: Post) {
@@ -84,6 +129,7 @@ class PostRepository : PostRepositoryInterface {
             posts.map {if (it.id == post.id) it.copy (content = post.content) else it}
         }
         data.value = posts
+        sync()
     }
 
     override fun getAll(): MutableLiveData<List<Post>> = data

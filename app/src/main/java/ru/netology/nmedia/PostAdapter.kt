@@ -30,22 +30,21 @@ class PostsAdapter(
         val post = getItem(position)
         holder.bind(post)
 
-            if (post.video != null) {
-                holder.binding.videoView.visibility = View.VISIBLE
-                holder.binding.playButton.visibility = View.VISIBLE
-                holder.binding.videoView.loadUrl(post.video)
-                listOf(holder.binding.videoView, holder.binding.playButton).forEach { view ->
-                    view.setOnClickListener {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
+        if (post.video != null) {
+            holder.binding.videoView.visibility = View.VISIBLE
+            holder.binding.playButton.visibility = View.VISIBLE
+            listOf(holder.binding.videoView, holder.binding.playButton).forEach { view ->
+                view.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(post.video))
                     startActivity(view.context, intent, null)
                 }
             }
-            } else if (post.video == null) {
-                holder.binding.videoView.visibility = View.GONE
-                holder.binding.playButton.visibility = View.GONE
-            }
+        } else if (post.video == null) {
+            holder.binding.videoView.visibility = View.GONE
+            holder.binding.playButton.visibility = View.GONE
         }
     }
+}
 
 
 object PostDiffCallback: DiffUtil.ItemCallback<Post>(){
