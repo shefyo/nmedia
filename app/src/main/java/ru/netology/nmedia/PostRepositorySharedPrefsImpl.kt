@@ -46,16 +46,14 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface 
     private val data = MutableLiveData(posts)
 
     init {
-        val savedPosts = prefs.getString(KEY, null)?.let {
-            gson.fromJson(it, typeToken) as List<Post>
-        } ?: emptyList()
-
-        nextId = (savedPosts.maxByOrNull { it.id }?.id ?: 0) + 1
-
-        posts = (deafultPosts + savedPosts).distinctBy { it.id }.sortedByDescending { it.id }
-
+        prefs.getString(KEY, null)?.let {
+            posts = gson.fromJson(it, typeToken)
+            nextId = posts.maxOf { it.id } + 1
+        } ?: run {
+            posts = posts + deafultPosts
+            sync()
+        }
         data.value = posts
-        sync()
     }
 
 

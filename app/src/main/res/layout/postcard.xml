@@ -129,7 +129,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="512dp"
         android:layout_height="512dp"
-        android:src = "@mipmap/video"
+        android:src = "@drawable/video_placeholder"
         android:visibility="gone"/>
 
     <ImageButton
