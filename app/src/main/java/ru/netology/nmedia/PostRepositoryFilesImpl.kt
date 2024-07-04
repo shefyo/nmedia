@@ -7,20 +7,19 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.Collections.list
 
-class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface {
+class PostRepositoryFilesImpl(private val context: Context) : PostRepositoryInterface {
 
     companion object {
-        private const val KEY = "posts"
+        private const val FILENAME = "posts.json"
     }
     private val gson = Gson()
-    private val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
     private val typeToken = TypeToken.getParameterized(List::class.java, Post::class.java).type
     private var nextId: Long = 1L
     private var posts = emptyList<Post>()
         private set(value) {
-            field = value
+        field = value
             sync()
-        }
+    }
     private var deafultPosts = listOf(
         Post(
             id = nextId++,
@@ -50,22 +49,24 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface 
     private val data = MutableLiveData(posts)
 
     init {
-        prefs.getString(KEY, null)?.let {
-            posts = gson.fromJson(it, typeToken)
-            nextId = posts.maxOf { it.id } + 1
-        } ?: run {
-            posts = posts + deafultPosts
-            sync()
+        val file = context.filesDir.resolve(FILENAME)
+        if (file.exists()) {
+            context.openFileInput(FILENAME).bufferedReader().use {
+                posts = gson.fromJson(it, typeToken)
+                if (posts.isNotEmpty()) {
+                    nextId = posts.maxOf { it.id } + 1
+                }
+            }
+        } else {
+            posts = deafultPosts
         }
-        data.value = posts
     }
 
 
 
     private fun sync() {
-        with(prefs.edit()) {
-            putString(KEY, gson.toJson(posts))
-            apply()
+        context.openFileOutput(FILENAME, Context.MODE_PRIVATE).bufferedWriter().use {
+            it.write(gson.toJson(posts))
         }
     }
 
