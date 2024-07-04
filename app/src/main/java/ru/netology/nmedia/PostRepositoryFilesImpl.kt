@@ -17,9 +17,9 @@ class PostRepositoryFilesImpl(private val context: Context) : PostRepositoryInte
     private var nextId: Long = 1L
     private var posts = emptyList<Post>()
         private set(value) {
-        field = value
+            field = value
             sync()
-    }
+        }
     private var deafultPosts = listOf(
         Post(
             id = nextId++,
