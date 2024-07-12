@@ -15,7 +15,7 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface 
     private val gson = Gson()
     private val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
     private val typeToken = TypeToken.getParameterized(List::class.java, Post::class.java).type
-    private var nextId: Long = 1L
+    private var nextId: Long = 0L
     private var posts = emptyList<Post>()
         private set(value) {
             field = value

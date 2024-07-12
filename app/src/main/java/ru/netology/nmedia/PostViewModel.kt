@@ -35,6 +35,15 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         _isEditing.value = true
     }
 
+    fun getPostById(postId: Long): Post {
+        return repository.getPost(postId)
+    }
+
+    fun loadPost(id: Long) {
+        val post = repository.getPost(id)
+        _post.value = post
+    }
+
 
     fun changeContentAndSave(text: String) {
         edited.value?.let {
@@ -44,10 +53,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun loadPost(id: Long) {
-        val post = repository.getPost(id)
-        _post.value = post
-    }
+
 
     private val _isEditing = MutableLiveData<Boolean>(false)
     val isEditing: LiveData<Boolean> = _isEditing

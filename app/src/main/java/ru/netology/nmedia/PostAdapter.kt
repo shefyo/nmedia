@@ -12,10 +12,14 @@ import ru.netology.nmedia.databinding.PostcardBinding
 
 
 interface OnInteractionListener {
-    fun onLike(post: Post)
+    fun onLike(post: Post, view: View)
     fun onRemove(post: Post)
     fun onEdit(post: Post)
-    fun onRepost(post: Post)
+    fun onRepost(post: Post, view: View)
+
+    fun onMenuClicked(post: Post, view: View)
+
+    fun onVideoClicked(post: Post, view: View)
 }
 
 class PostsAdapter(

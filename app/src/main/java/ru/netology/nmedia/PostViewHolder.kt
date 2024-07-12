@@ -23,10 +23,14 @@ class PostViewHolder(
             reposts.text = formatCount(post.countreposts)
             likes.isChecked = post.likedByMe
             likes.setOnClickListener {
-                onInteractionListener.onLike(post)
+                onInteractionListener.onLike(post, it)
             }
             reposts.setOnClickListener {
-                onInteractionListener.onRepost(post)
+                onInteractionListener.onRepost(post, it)
+            }
+
+            videoView.setOnClickListener {
+                onInteractionListener.onVideoClicked(post, it)
             }
 
 
@@ -40,6 +44,7 @@ class PostViewHolder(
 
 
                 menu.setOnClickListener {
+                    onInteractionListener.onMenuClicked(post, it)
                     PopupMenu(it.context, it).apply {
                         inflate(R.menu.options_post)
                         setOnMenuItemClickListener { item ->
