@@ -10,16 +10,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import ru.netology.nmedia.databinding.PostcardBinding
 
-
 interface OnInteractionListener {
-    fun onLike(post: Post, view: View)
+    fun onLike(post: Post)
     fun onRemove(post: Post)
     fun onEdit(post: Post)
-    fun onRepost(post: Post, view: View)
-
-    fun onMenuClicked(post: Post, view: View)
-
-    fun onVideoClicked(post: Post, view: View)
+    fun onRepost(post: Post)
+    fun onPostClicked(post: Post)
 }
 
 class PostsAdapter(
@@ -33,6 +29,7 @@ class PostsAdapter(
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = getItem(position)
         holder.bind(post)
+
 
         if (post.video != null) {
             holder.binding.videoView.visibility = View.VISIBLE
@@ -50,12 +47,10 @@ class PostsAdapter(
     }
 }
 
-
 object PostDiffCallback: DiffUtil.ItemCallback<Post>(){
     override fun areItemsTheSame(oldItem:Post,newItem:Post):Boolean{
         return oldItem.id == newItem.id
     }
-
 
     override fun areContentsTheSame(oldItem:Post,newItem:Post):Boolean{
         return oldItem == newItem

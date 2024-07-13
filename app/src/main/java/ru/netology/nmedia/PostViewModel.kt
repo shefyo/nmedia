@@ -23,9 +23,25 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PostRepositoryInterface = PostRepositorySQLiteImpl(AppDb.getInstance(application).postDao)
     val data = this.repository.getAll()
     val edited = MutableLiveData(empty)
-    fun likeById(id: Long) = repository.likeById(id)
-    fun repostById(id: Long) = repository.repostById(id)
-    fun removeById(id: Long) = repository.removeById(id)
+    private val _postDeleted = MutableLiveData<Long>()
+    val postDeleted: LiveData<Long> = _postDeleted
+    fun likeById(id: Long)  {
+        repository.likeById(id)
+        _post.value = repository.getPost(id)
+    }
+    fun repostById(id: Long) {
+        repository.repostById(id)
+        _post.value = repository.getPost(id)
+    }
+
+    fun updatePost(post: Post) {
+        repository.save(post)
+        _post.value = repository.getPost(post.id)
+    }
+    fun removeById(id: Long) {
+        repository.removeById(id)
+        _postDeleted.value = id
+    }
     private val _post = MutableLiveData<Post>()
     val post: LiveData<Post>
         get() = _post
@@ -47,11 +63,13 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun changeContentAndSave(text: String) {
         edited.value?.let {
-            if(it.content != text.trim()) {
+            if (it.content != text.trim()) {
                 repository.save(it.copy(content = text))
+                _post.value = repository.getPost(it.id)
             }
         }
     }
+
 
 
 

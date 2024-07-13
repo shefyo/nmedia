@@ -7,8 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import ru.netology.nmedia.EditPostFragment.Companion.EXTRA_POST_ID
-import ru.netology.nmedia.EditPostFragment.Companion.EXTRA_POST_TEXT
 import ru.netology.nmedia.databinding.FragmentEditPostBinding
 
 class EditPostFragment : Fragment() {
@@ -46,13 +44,10 @@ class EditPostFragment : Fragment() {
         binding.save1.setOnClickListener {
             val editedText = binding.content.text.toString()
             if (editedText.isNotBlank()) {
-                parentFragmentManager.setFragmentResult("requestKey", Bundle().apply {
-                    putString(RESULT_EDITED_POST_TEXT, editedText)
-                    putLong(EXTRA_POST_ID, postId)
-                })
+                findNavController().previousBackStackEntry?.savedStateHandle?.set("postKey", editedText)
                 viewModel.changeContentAndSave(editedText)
             }
-            parentFragmentManager.popBackStack()
+            findNavController().navigateUp()
         }
 
         return binding.root

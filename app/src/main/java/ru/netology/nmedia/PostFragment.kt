@@ -23,14 +23,14 @@ class PostFragment : Fragment() {
 
         override fun onRemove(post: Post) {
             viewModel.removeById(post.id)
-            findNavController().navigateUp()
+            findNavController().navigate(R.id.action_postFragment_to_feedFragment)
         }
 
-        override fun onLike(post: Post, view: View) {
+        override fun onLike(post: Post) {
             viewModel.likeById(post.id)
         }
 
-        override fun onRepost(post: Post, view: View) {
+        override fun onRepost(post: Post) {
             viewModel.repostById(post.id)
             val intent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -41,12 +41,8 @@ class PostFragment : Fragment() {
             startActivity(shareIntent)
         }
 
-        override fun onMenuClicked(post: Post, view: View) {
-            TODO("Not yet implemented")
-        }
-
-        override fun onVideoClicked(post: Post, view: View) {
-            TODO("Not yet implemented")
+        override fun onPostClicked(post: Post) {
+            TODO("Not implemented")
         }
     }
 
@@ -56,9 +52,7 @@ class PostFragment : Fragment() {
     ): View {
         val binding = PostcardBinding.inflate(inflater, container, false)
 
-        // Получение аргумента postId
-        val postId =
-            arguments?.getLong("postId") ?: throw IllegalArgumentException("No post ID provided")
+        val postId = arguments?.getLong("postId") ?: throw IllegalArgumentException("No post ID provided")
 
         viewModel.loadPost(postId)
         viewModel.post.observe(viewLifecycleOwner) { post ->
@@ -108,6 +102,16 @@ class PostFragment : Fragment() {
                 }
             }
         }
+
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>("postKey")
+            ?.observe(viewLifecycleOwner) { result ->
+                result?.let {
+                    val updatedPost = viewModel.post.value?.copy(content = it)
+                    if (updatedPost != null) {
+                        viewModel.updatePost(updatedPost)
+                    }
+                }
+            }
 
         return binding.root
     }

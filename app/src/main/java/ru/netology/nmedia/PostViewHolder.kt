@@ -12,7 +12,6 @@ class PostViewHolder(
     private val onInteractionListener: OnInteractionListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
-
     fun bind(post: Post) {
         binding.apply {
             author.text = post.author
@@ -22,17 +21,17 @@ class PostViewHolder(
             likes.text = formatCount(post.countlikes)
             reposts.text = formatCount(post.countreposts)
             likes.isChecked = post.likedByMe
+
+            root.setOnClickListener {
+                onInteractionListener.onPostClicked(post)
+            }
+
             likes.setOnClickListener {
-                onInteractionListener.onLike(post, it)
+                onInteractionListener.onLike(post)
             }
             reposts.setOnClickListener {
-                onInteractionListener.onRepost(post, it)
+                onInteractionListener.onRepost(post)
             }
-
-            videoView.setOnClickListener {
-                onInteractionListener.onVideoClicked(post, it)
-            }
-
 
             binding.videoView.visibility = if (post.video != null) View.VISIBLE else View.GONE
             binding.playButton.setOnClickListener {
@@ -43,38 +42,37 @@ class PostViewHolder(
             }
 
 
-                menu.setOnClickListener {
-                    onInteractionListener.onMenuClicked(post, it)
-                    PopupMenu(it.context, it).apply {
-                        inflate(R.menu.options_post)
-                        setOnMenuItemClickListener { item ->
-                            when (item.itemId) {
-                                R.id.edit -> {
-                                    onInteractionListener.onEdit(post)
-                                    true
-                                }
-
-                                R.id.remove -> {
-                                    onInteractionListener.onRemove(post)
-                                    true
-                                }
-
-                                else -> false
+            menu.setOnClickListener {
+                PopupMenu(it.context, it).apply {
+                    inflate(R.menu.options_post)
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.edit -> {
+                                onInteractionListener.onEdit(post)
+                                true
                             }
+
+                            R.id.remove -> {
+                                onInteractionListener.onRemove(post)
+                                true
+                            }
+
+                            else -> false
                         }
-                    }.show()
-                }
+                    }
+                }.show()
             }
-
         }
-    }
 
-    private fun formatCount(count: Int): String {
-        return when {
-            count > 1000000 -> "${count / 1000000}.${(count % 1000000) / 100000}M"
-            count == 1000000 -> "${count / 1000000}M"
-            count >= 10000 -> "${count / 1000}K"
-            count >= 1000 -> "${count / 1000}K"
-            else -> count.toString()
-        }
     }
+}
+
+private fun formatCount(count: Int): String {
+    return when {
+        count > 1000000 -> "${count / 1000000}.${(count % 1000000) / 100000}M"
+        count == 1000000 -> "${count / 1000000}M"
+        count >= 10000 -> "${count / 1000}K"
+        count >= 1000 -> "${count / 1000}K"
+        else -> count.toString()
+    }
+}
