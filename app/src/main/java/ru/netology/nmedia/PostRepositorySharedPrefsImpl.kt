@@ -1,11 +1,9 @@
 package ru.netology.nmedia
 
 import android.content.Context
-import android.provider.Settings.Global.putString
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.util.Collections.list
 
 class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface {
 
@@ -69,7 +67,7 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface 
         }
     }
 
-    override fun getPost(id: Long): Post {
+    override suspend fun getPost(id: Long): Post {
         return posts.find { it.id == id } ?: throw IllegalArgumentException("Пост не найден")
     }
 
@@ -80,7 +78,7 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface 
     }
 
 
-    override fun likeById(id: Long) {
+    override suspend fun likeById(id: Long) {
         posts = posts.map { post ->
             if (post.id == id) {
                 post.copy(
@@ -94,7 +92,7 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface 
         data.value = posts
     }
 
-    override fun repostById(id: Long) {
+    override suspend fun repostById(id: Long) {
         posts = posts.map { post ->
             if (post.id == id) {
                 post.copy(
@@ -108,12 +106,12 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface 
         data.value = posts
     }
 
-    override fun removeById(id: Long) {
+    override suspend fun removeById(id: Long) {
         posts = posts.filter { it.id != id }
         data.value = posts
     }
 
-    override fun save(post: Post) {
+    override suspend fun save(post: Post) {
         posts = if (post.id == 0L) {
             listOf(
                 post.copy(

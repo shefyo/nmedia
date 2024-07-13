@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 
 interface PostRepositoryInterface {
 
-    fun getPost(id: Long): Post
-    fun likeById(id: Long)
-    fun repostById(id: Long)
-    fun removeById(id: Long)
-    fun save(post: Post)
-    fun getAll(): MutableLiveData<List<Post>>
+    suspend fun getPost(id: Long): Post
+    suspend fun likeById(id: Long)
+    suspend fun repostById(id: Long)
+    suspend fun removeById(id: Long)
+    suspend fun save(post: Post)
+    fun getAll(): LiveData<List<Post>>
 }
