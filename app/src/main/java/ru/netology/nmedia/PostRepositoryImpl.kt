@@ -1,39 +1,95 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.repository
 
-import androidx.lifecycle.map
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import androidx.lifecycle.LiveData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.PostRepositoryInterface
-import ru.netology.nmedia.db.PostDao
-import ru.netology.nmedia.db.PostEntity
+import java.util.concurrent.TimeUnit
 
-class PostRepositoryImpl(
-    private val dao: PostDao,
-) : PostRepositoryInterface {
-    override fun getAll() = dao.getAll().map { list ->
-        list.map {
-            it.toDto()
-        }
+class PostRepositoryImpl : PostRepositoryInterface {
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .build()
+    private val gson = Gson()
+    private val typeToken = object : TypeToken<List<Post>>() {}
+
+    companion object {
+        private const val BASE_URL = "http://10.0.2.2:9999"
+        private val jsonType = "application/json".toMediaType()
     }
 
-    override suspend fun getPost(id: Long): Post = withContext(Dispatchers.IO) {
-        dao.getPostById(id)
+    override suspend fun getAll(): LiveData<List<Post>> {
+        val request: Request = Request.Builder()
+            .url("$BASE_URL/api/slow/posts")
+            .build()
+
+        return client.newCall(request)
+            .execute()
+            .let { it.body?.string() ?: throw RuntimeException("body is null") }
+            .let {
+                gson.fromJson(it, typeToken.type)
+            }
     }
 
-    override suspend fun likeById(id: Long) = withContext(Dispatchers.IO) {
-        dao.likeById(id)
+    override suspend fun getPost(id: Long): Post {
+        val request: Request = Request.Builder()
+            .url("$BASE_URL/api/slow/posts/$id")
+            .build()
+
+        return client.newCall(request)
+            .execute()
+            .let { it.body?.string() ?: throw RuntimeException("body is null") }
+            .let {
+                gson.fromJson(it, Post::class.java)
+            }
     }
 
-    override suspend fun repostById(id: Long) = withContext(Dispatchers.IO) {
-        dao.repostById(id)
+    override suspend fun repostById(id: Long) {
+        val request: Request = Request.Builder()
+            .post("".toRequestBody(jsonType))
+            .url("$BASE_URL/api/slow/posts/$id/repost")
+            .build()
+
+        client.newCall(request)
+            .execute()
+            .close()
     }
 
-    override suspend fun save(post: Post) = withContext(Dispatchers.IO) {
-        dao.save(PostEntity.fromDto(post))
+    override suspend fun likeById(id: Long) {
+        val request: Request = Request.Builder()
+            .post("".toRequestBody(jsonType))
+            .url("$BASE_URL/api/slow/posts/$id/likes")
+            .build()
+
+        client.newCall(request)
+            .execute()
+            .close()
     }
 
-    override suspend fun removeById(id: Long) = withContext(Dispatchers.IO) {
-        dao.removeById(id)
+    override suspend fun save(post: Post) {
+        val request: Request = Request.Builder()
+            .post(gson.toJson(post).toRequestBody(jsonType))
+            .url("$BASE_URL/api/slow/posts")
+            .build()
+
+        client.newCall(request)
+            .execute()
+            .close()
+    }
+
+    override suspend fun removeById(id: Long) {
+        val request: Request = Request.Builder()
+            .delete()
+            .url("$BASE_URL/api/slow/posts/$id")
+            .build()
+
+        client.newCall(request)
+            .execute()
+            .close()
     }
 }

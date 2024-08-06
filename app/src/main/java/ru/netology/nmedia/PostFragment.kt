@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.databinding.PostcardBinding
+import ru.netology.nmedia.viewmodel.PostViewModel
 
 class PostFragment : Fragment() {
 
@@ -107,9 +108,6 @@ class PostFragment : Fragment() {
             ?.observe(viewLifecycleOwner) { result ->
                 result?.let {
                     val updatedPost = viewModel.post.value?.copy(content = it)
-                    if (updatedPost != null) {
-                        viewModel.updatePost(updatedPost)
-                    }
                 }
             }
 

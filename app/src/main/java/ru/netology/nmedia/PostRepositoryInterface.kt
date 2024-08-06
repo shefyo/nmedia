@@ -10,5 +10,5 @@ interface PostRepositoryInterface {
     suspend fun repostById(id: Long)
     suspend fun removeById(id: Long)
     suspend fun save(post: Post)
-    fun getAll(): LiveData<List<Post>>
+    suspend fun getAll(): LiveData<List<Post>>
 }

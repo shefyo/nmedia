@@ -127,5 +127,5 @@ class PostRepositorySharedPrefsImpl(context: Context) : PostRepositoryInterface 
         data.value = posts
     }
 
-    override fun getAll(): MutableLiveData<List<Post>> = data
+    override suspend fun getAll(): MutableLiveData<List<Post>> = data
 }

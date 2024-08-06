@@ -1,13 +1,14 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
-import ru.netology.nmedia.db.AppDb
-import ru.netology.nmedia.PostRepositoryImpl
+import ru.netology.nmedia.Post
+import ru.netology.nmedia.model.FeedModel
+import ru.netology.nmedia.repository.PostRepositoryImpl
+import ru.netology.nmedia.PostRepositoryInterface
+import ru.netology.nmedia.util.SingleLiveEvent
+import java.io.IOException
 
 private val empty = Post(
     id = 0,
@@ -23,13 +24,60 @@ private val empty = Post(
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: PostRepositoryInterface = PostRepositoryImpl(
-        AppDb.getInstance(context = application).postDao()
-    )
-    val data = this.repository.getAll()
+    private val repository: PostRepositoryInterface = PostRepositoryImpl()
+    private val _data = MutableLiveData(FeedModel())
+    val data: LiveData<FeedModel>
+        get() = _data
     val edited = MutableLiveData(empty)
+    private val _postCreated = SingleLiveEvent<Unit>()
+    val postCreated: LiveData<Unit>
+        get() = _postCreated
     private val _postDeleted = MutableLiveData<Long>()
     val postDeleted: LiveData<Long> = _postDeleted
+    private val _post = MutableLiveData<Post>()
+    val post: LiveData<Post>
+        get() = _post
+
+    init {
+        loadPosts()
+    }
+
+    fun loadPosts() {
+        _data.value = FeedModel(loading = true)
+        viewModelScope.launch {
+            try {
+                val posts = repository.getAll()
+                _data.value = FeedModel(posts = posts.value ?: emptyList(), empty = posts.value.isNullOrEmpty())
+            } catch (e: IOException) {
+                _data.value = FeedModel(error = true)
+            }
+        }
+    }
+
+
+    fun save() {
+        edited.value?.let {
+            viewModelScope.launch {
+                repository.save(it)
+                _postCreated.value = Unit
+                _post.value = repository.getPost(it.id)
+            }
+        }
+        edited.value = empty
+    }
+
+    fun edit(post: Post) {
+        edited.value = post
+    }
+
+    fun changeContent(content: String) {
+        val text = content.trim()
+        if (edited.value?.content == text) {
+            return
+        }
+        edited.value = edited.value?.copy(content = text)
+    }
+
     fun likeById(id: Long) {
         viewModelScope.launch {
             repository.likeById(id)
@@ -44,63 +92,49 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun updatePost(post: Post) {
-        viewModelScope.launch {
-            repository.save(post)
-            _post.value = repository.getPost(post.id)
-        }
-    }
-
     fun removeById(id: Long) {
         viewModelScope.launch {
-            repository.removeById(id)
-            _postDeleted.value = id
+            val oldPosts = _data.value?.posts.orEmpty()
+            val updatedPosts = oldPosts.filter { it.id != id }
+
+            _data.value = _data.value?.copy(posts = updatedPosts)
+
+            try {
+                repository.removeById(id)
+                _postDeleted.value = id
+            } catch (e: IOException) {
+                _data.value = _data.value?.copy(posts = oldPosts)
+            }
         }
     }
 
-    private val _post = MutableLiveData<Post>()
-    val post: LiveData<Post>
-        get() = _post
-
-    fun edit(post: Post) {
-        edited.value = post
-        val _isEditing = MutableLiveData<Boolean>(false)
-        _isEditing.value = true
-    }
 
     fun getPostById(postId: Long) {
         viewModelScope.launch {
-            repository.getPost(postId)
+            _post.value = repository.getPost(postId)
         }
     }
 
     fun loadPost(id: Long) {
         viewModelScope.launch {
-            val post = repository.getPost(id)
-            _post.value = post
+            _post.value = repository.getPost(id)
         }
     }
-
 
     fun changeContentAndSave(text: String) {
         viewModelScope.launch {
             edited.value?.let {
                 if (it.content != text.trim()) {
-                    repository.save(it.copy(content = text))
+                    val updatedPost = it.copy(content = text)
+                    repository.save(updatedPost)
                     _post.value = repository.getPost(it.id)
                 }
             }
         }
+        edited.value = empty
+    }
 
-
-        val _isEditing = MutableLiveData<Boolean>(false)
-        val isEditing: LiveData<Boolean> = _isEditing
-
-        fun cancelEditing() {
-            _isEditing.value = false
-            edited.value = empty
-        }
-
-
+    fun cancelEditing() {
+        edited.value = empty
     }
 }

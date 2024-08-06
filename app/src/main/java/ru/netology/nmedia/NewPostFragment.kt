@@ -1,43 +1,48 @@
-package ru.netology.nmedia
+package ru.netology.nmedia.activity
 
-
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
+import ru.netology.nmedia.util.AndroidUtils
+import ru.netology.nmedia.StringArg
+import ru.netology.nmedia.viewmodel.PostViewModel
 
 class NewPostFragment : Fragment() {
+
     companion object {
-        private const val TEXT_KEY = "TEXT_KEY"
-        var Bundle.textArg: String?
-            set(value) = putString(TEXT_KEY, value)
-            get() = getString(TEXT_KEY)
+        var Bundle.textArg: String? by StringArg
     }
+
+    private val viewModel: PostViewModel by activityViewModels()
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val binding = FragmentNewPostBinding.inflate(inflater, container, false)
-        val viewModel: PostViewModel by viewModels (ownerProducer = ::requireParentFragment) {
-            PostViewModelFactory(requireActivity().application)
-        }
+    ): View {
+        val binding = FragmentNewPostBinding.inflate(
+            inflater,
+            container,
+            false
+        )
+
+        arguments?.textArg
+            ?.let(binding.content::setText)
 
         binding.save.setOnClickListener {
-            val content = binding.content.text.toString()
-            if (content.isNotBlank()) {
-                viewModel.changeContentAndSave(content)
-                findNavController().previousBackStackEntry?.savedStateHandle?.set("postKey", content)
-            }
+            viewModel.changeContent(binding.content.text.toString())
+            viewModel.save()
+            AndroidUtils.hideKeyboard(requireView())
+        }
+        viewModel.postCreated.observe(viewLifecycleOwner) {
+            viewModel.loadPosts()
             findNavController().navigateUp()
         }
-
         return binding.root
     }
 }

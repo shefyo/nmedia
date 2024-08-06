@@ -130,5 +130,5 @@ class PostRepositoryFilesImpl(private val context: Context) : PostRepositoryInte
     }
 
 
-    override fun getAll(): MutableLiveData<List<Post>> = data
+    override suspend fun getAll(): MutableLiveData<List<Post>> = data
 }
