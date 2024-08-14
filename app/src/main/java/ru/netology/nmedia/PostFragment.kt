@@ -63,7 +63,7 @@ class PostFragment : Fragment() {
                     published.text = post.published
                     content.text = post.content
                     countviews.text = post.countviews.toString()
-                    likes.text = post.countlikes.toString()
+                    likes.text = post.likes.toString()
                     reposts.text = post.countreposts.toString()
                     likes.isChecked = post.likedByMe
 

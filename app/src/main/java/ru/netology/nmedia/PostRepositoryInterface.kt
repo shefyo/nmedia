@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 interface PostRepositoryInterface {
 
     fun getPost(id: Long): Post
-    fun likeById(id: Long)
+    fun likeById(id: Long): Post
     fun repostById(id: Long)
     fun removeById(id: Long)
     fun save(post: Post)

@@ -16,7 +16,7 @@ private val empty = Post(
     author = "",
     likedByMe = false,
     published = "",
-    countlikes = 0,
+    likes = 0,
     countreposts = 0,
     countviews = 1,
     video = null,
@@ -78,8 +78,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun likeById(id: Long) {
         thread {
-            repository.likeById(id)
-            _data.postValue(FeedModel(posts = repository.getAll(), empty = repository.getAll().isEmpty()))
+            val postServer = repository.likeById(id)
+            _data.postValue(
+                FeedModel(
+                    posts = (_data.value?.posts?.map {
+                        if (it.id == id) {
+                            postServer
+                        } else {
+                            it
+                        }
+                    } as List<Post>).orEmpty(),
+                    empty = (_data.value?.posts?: listOf()).isEmpty()
+                )
+            )
         }
     }
 

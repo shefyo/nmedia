@@ -18,7 +18,7 @@ class PostViewHolder(
             published.text = post.published
             content.text = post.content
             countviews.text = post.countviews.toString()
-            likes.text = formatCount(post.countlikes)
+            likes.text = formatCount(post.likes)
             reposts.text = formatCount(post.countreposts)
             likes.isChecked = post.likedByMe
 

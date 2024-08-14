@@ -29,13 +29,10 @@ class PostRepositoryImpl : PostRepositoryInterface {
             .url("$BASE_URL/api/slow/posts")
             .build()
 
-        client.newCall(request)
-            .execute()
-            .let { it.body?.string() ?: throw RuntimeException("body is null") }
-            .let {
-                posts = gson.fromJson(it, typeToken.type)
-                return posts
-            }
+        val response = client.newCall(request).execute()
+        val body = response.body?.string() ?: throw RuntimeException("body is null")
+        posts = gson.fromJson(body, typeToken.type)
+        return posts
     }
 
     override fun getPost(id: Long): Post {
@@ -43,12 +40,9 @@ class PostRepositoryImpl : PostRepositoryInterface {
             .url("$BASE_URL/api/slow/posts/$id")
             .build()
 
-        client.newCall(request)
-            .execute()
-            .let { it.body?.string() ?: throw RuntimeException("body is null") }
-            .let {
-                return gson.fromJson(it, Post::class.java)
-            }
+        val response = client.newCall(request).execute()
+        val body = response.body?.string() ?: throw RuntimeException("body is null")
+        return gson.fromJson(body, Post::class.java)
     }
 
     override fun repostById(id: Long) {
@@ -57,28 +51,28 @@ class PostRepositoryImpl : PostRepositoryInterface {
             .url("$BASE_URL/api/slow/posts/$id/repost")
             .build()
 
-        client.newCall(request)
-            .execute()
-            .close()
+        client.newCall(request).execute().close()
     }
 
-    override fun likeById(id: Long) {
+    override fun likeById(id: Long): Post {
         val request: Request = Request.Builder()
             .post("".toRequestBody(jsonType))
-            .url("$BASE_URL/api/slow/posts/$id/like")
+            .url("$BASE_URL/api/slow/posts/$id/likes")
             .build()
 
         client.newCall(request)
             .execute()
             .close()
 
+        val post = posts.find { it.id == id }!!
+        val updatedPost = post.copy(likedByMe =!post.likedByMe, likes = if (post.likedByMe) post.likes - 1 else post.likes + 1)
         posts = posts.map {
             if (it.id == id) {
-                it.copy(likedByMe =!it.likedByMe, countlikes = if (it.likedByMe) it.countlikes - 1 else it.countlikes + 1)
+                updatedPost
             } else it
         }
+        return updatedPost
     }
-
 
     override fun save(post: Post) {
         val request: Request = Request.Builder()
@@ -86,9 +80,7 @@ class PostRepositoryImpl : PostRepositoryInterface {
             .url("$BASE_URL/api/slow/posts")
             .build()
 
-        client.newCall(request)
-            .execute()
-            .close()
+        client.newCall(request).execute().close()
     }
 
     override fun removeById(id: Long) {
@@ -97,8 +89,6 @@ class PostRepositoryImpl : PostRepositoryInterface {
             .url("$BASE_URL/api/slow/posts/$id")
             .build()
 
-        client.newCall(request)
-            .execute()
-            .close()
+        client.newCall(request).execute().close()
     }
 }
