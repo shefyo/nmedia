@@ -5,7 +5,7 @@
     <string name="title_activity_new_post" translatable="false">NewPostActivity</string>
     <string name="title_activity_edit_post" translatable="false">EditPostActivity</string>
     <string name="notification_user_liked">User %1$s liked %2$s\\\'s post</string>
-    <string name="channel_remote_name">Server notifications</string>
-    <string name="channel_remote_description">Notifications from remote server</string>
-    <string name="google_play_unavailable">Google Api Unavailable</string>
+    <string name="channel_remote_name" translatable="false">Server notifications</string>
+    <string name="channel_remote_description" translatable="false">Notifications from remote server</string>
+    <string name="google_play_unavailable" translatable="false">Google Api Unavailable</string>
 </resources>
