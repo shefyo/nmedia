@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import ru.netology.nmedia.viewmodel.PostViewModel
 
 class PostViewModelFactory(private val application: Application) :
     ViewModelProvider.Factory {

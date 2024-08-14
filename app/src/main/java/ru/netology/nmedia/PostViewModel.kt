@@ -2,13 +2,13 @@ package ru.netology.nmedia.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.*
-import kotlinx.coroutines.launch
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.PostRepositoryInterface
 import ru.netology.nmedia.util.SingleLiveEvent
 import java.io.IOException
+import kotlin.concurrent.thread
 
 private val empty = Post(
     id = 0,
@@ -34,8 +34,8 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         get() = _postCreated
     private val _postDeleted = MutableLiveData<Long>()
     val postDeleted: LiveData<Long> = _postDeleted
-    private val _post = MutableLiveData<Post>()
-    val post: LiveData<Post>
+    private val _post = MutableLiveData<Post?>()
+    val post: MutableLiveData<Post?>
         get() = _post
 
     init {
@@ -44,23 +44,21 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadPosts() {
         _data.value = FeedModel(loading = true)
-        viewModelScope.launch {
+        thread {
             try {
                 val posts = repository.getAll()
-                _data.value = FeedModel(posts = posts.value ?: emptyList(), empty = posts.value.isNullOrEmpty())
+                _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
             } catch (e: IOException) {
-                _data.value = FeedModel(error = true)
+                _data.postValue(FeedModel(error = true))
             }
         }
     }
 
-
     fun save() {
         edited.value?.let {
-            viewModelScope.launch {
+            thread {
                 repository.save(it)
-                _postCreated.value = Unit
-                _post.value = repository.getPost(it.id)
+                _postCreated.postValue(Unit)
             }
         }
         edited.value = empty
@@ -79,55 +77,54 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun likeById(id: Long) {
-        viewModelScope.launch {
+        thread {
             repository.likeById(id)
-            _post.value = repository.getPost(id)
+            _data.postValue(FeedModel(posts = repository.getAll(), empty = repository.getAll().isEmpty()))
         }
     }
 
     fun repostById(id: Long) {
-        viewModelScope.launch {
+        thread {
             repository.repostById(id)
-            _post.value = repository.getPost(id)
+            _post.postValue(repository.getPost(id))
         }
     }
 
     fun removeById(id: Long) {
-        viewModelScope.launch {
+        thread {
             val oldPosts = _data.value?.posts.orEmpty()
             val updatedPosts = oldPosts.filter { it.id != id }
 
-            _data.value = _data.value?.copy(posts = updatedPosts)
+            _data.postValue(_data.value?.copy(posts = updatedPosts))
 
             try {
                 repository.removeById(id)
-                _postDeleted.value = id
+                _postDeleted.postValue(id)
             } catch (e: IOException) {
-                _data.value = _data.value?.copy(posts = oldPosts)
+                _data.postValue(_data.value?.copy(posts = oldPosts))
             }
         }
     }
 
-
     fun getPostById(postId: Long) {
-        viewModelScope.launch {
-            _post.value = repository.getPost(postId)
+        thread {
+            _post.postValue(repository.getPost(postId))
         }
     }
 
     fun loadPost(id: Long) {
-        viewModelScope.launch {
-            _post.value = repository.getPost(id)
+        thread {
+            _post.postValue(repository.getPost(id))
         }
     }
 
     fun changeContentAndSave(text: String) {
-        viewModelScope.launch {
+        thread {
             edited.value?.let {
                 if (it.content != text.trim()) {
                     val updatedPost = it.copy(content = text)
                     repository.save(updatedPost)
-                    _post.value = repository.getPost(it.id)
+                    _post.postValue(repository.getPost(it.id))
                 }
             }
         }

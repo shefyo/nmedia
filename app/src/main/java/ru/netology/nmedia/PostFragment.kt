@@ -57,49 +57,51 @@ class PostFragment : Fragment() {
 
         viewModel.loadPost(postId)
         viewModel.post.observe(viewLifecycleOwner) { post ->
-            with(binding) {
-                author.text = post.author
-                published.text = post.published
-                content.text = post.content
-                countviews.text = post.countviews.toString()
-                likes.text = post.countlikes.toString()
-                reposts.text = post.countreposts.toString()
-                likes.isChecked = post.likedByMe
+            post?.let {
+                with(binding) {
+                    author.text = post.author
+                    published.text = post.published
+                    content.text = post.content
+                    countviews.text = post.countviews.toString()
+                    likes.text = post.countlikes.toString()
+                    reposts.text = post.countreposts.toString()
+                    likes.isChecked = post.likedByMe
 
-                likes.setOnClickListener {
-                    viewModel.likeById(post.id)
-                }
-
-                reposts.setOnClickListener {
-                    viewModel.repostById(post.id)
-                    val intent = Intent().apply {
-                        action = Intent.ACTION_SEND
-                        type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, post.content)
+                    likes.setOnClickListener {
+                        viewModel.likeById(post.id)
                     }
-                    val shareIntent = Intent.createChooser(intent, "Share post")
-                    startActivity(shareIntent)
-                }
 
-                binding.menu.setOnClickListener { view ->
-                    PopupMenu(view.context, view).apply {
-                        inflate(R.menu.options_post)
-                        setOnMenuItemClickListener { item ->
-                            when (item.itemId) {
-                                R.id.edit -> {
-                                    onInteractionListener?.onEdit(post)
-                                    true
-                                }
-
-                                R.id.remove -> {
-                                    onInteractionListener?.onRemove(post)
-                                    true
-                                }
-
-                                else -> false
-                            }
+                    reposts.setOnClickListener {
+                        viewModel.repostById(post.id)
+                        val intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            type = "text/plain"
+                            putExtra(Intent.EXTRA_TEXT, post.content)
                         }
-                    }.show()
+                        val shareIntent = Intent.createChooser(intent, "Share post")
+                        startActivity(shareIntent)
+                    }
+
+                    binding.menu.setOnClickListener { view ->
+                        PopupMenu(view.context, view).apply {
+                            inflate(R.menu.options_post)
+                            setOnMenuItemClickListener { item ->
+                                when (item.itemId) {
+                                    R.id.edit -> {
+                                        onInteractionListener?.onEdit(post)
+                                        true
+                                    }
+
+                                    R.id.remove -> {
+                                        onInteractionListener?.onRemove(post)
+                                        true
+                                    }
+
+                                    else -> false
+                                }
+                            }
+                        }.show()
+                    }
                 }
             }
         }

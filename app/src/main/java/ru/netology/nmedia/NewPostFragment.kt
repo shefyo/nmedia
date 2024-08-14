@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import ru.netology.nmedia.R
 import ru.netology.nmedia.databinding.FragmentNewPostBinding
 import ru.netology.nmedia.util.AndroidUtils
 import ru.netology.nmedia.StringArg
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-class NewPostFragment : Fragment() {
+class NewPostFragment : Fragment(R.layout.fragment_new_post) {
 
     companion object {
         var Bundle.textArg: String? by StringArg

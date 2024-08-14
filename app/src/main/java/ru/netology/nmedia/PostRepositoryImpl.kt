@@ -1,6 +1,5 @@
 package ru.netology.nmedia.repository
 
-import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.MediaType.Companion.toMediaType
@@ -23,33 +22,36 @@ class PostRepositoryImpl : PostRepositoryInterface {
         private val jsonType = "application/json".toMediaType()
     }
 
-    override suspend fun getAll(): LiveData<List<Post>> {
+    private var posts = listOf<Post>()
+
+    override fun getAll(): List<Post> {
         val request: Request = Request.Builder()
             .url("$BASE_URL/api/slow/posts")
             .build()
 
-        return client.newCall(request)
+        client.newCall(request)
             .execute()
             .let { it.body?.string() ?: throw RuntimeException("body is null") }
             .let {
-                gson.fromJson(it, typeToken.type)
+                posts = gson.fromJson(it, typeToken.type)
+                return posts
             }
     }
 
-    override suspend fun getPost(id: Long): Post {
+    override fun getPost(id: Long): Post {
         val request: Request = Request.Builder()
             .url("$BASE_URL/api/slow/posts/$id")
             .build()
 
-        return client.newCall(request)
+        client.newCall(request)
             .execute()
             .let { it.body?.string() ?: throw RuntimeException("body is null") }
             .let {
-                gson.fromJson(it, Post::class.java)
+                return gson.fromJson(it, Post::class.java)
             }
     }
 
-    override suspend fun repostById(id: Long) {
+    override fun repostById(id: Long) {
         val request: Request = Request.Builder()
             .post("".toRequestBody(jsonType))
             .url("$BASE_URL/api/slow/posts/$id/repost")
@@ -60,18 +62,25 @@ class PostRepositoryImpl : PostRepositoryInterface {
             .close()
     }
 
-    override suspend fun likeById(id: Long) {
+    override fun likeById(id: Long) {
         val request: Request = Request.Builder()
             .post("".toRequestBody(jsonType))
-            .url("$BASE_URL/api/slow/posts/$id/likes")
+            .url("$BASE_URL/api/slow/posts/$id/like")
             .build()
 
         client.newCall(request)
             .execute()
             .close()
+
+        posts = posts.map {
+            if (it.id == id) {
+                it.copy(likedByMe =!it.likedByMe, countlikes = if (it.likedByMe) it.countlikes - 1 else it.countlikes + 1)
+            } else it
+        }
     }
 
-    override suspend fun save(post: Post) {
+
+    override fun save(post: Post) {
         val request: Request = Request.Builder()
             .post(gson.toJson(post).toRequestBody(jsonType))
             .url("$BASE_URL/api/slow/posts")
@@ -82,7 +91,7 @@ class PostRepositoryImpl : PostRepositoryInterface {
             .close()
     }
 
-    override suspend fun removeById(id: Long) {
+    override fun removeById(id: Long) {
         val request: Request = Request.Builder()
             .delete()
             .url("$BASE_URL/api/slow/posts/$id")

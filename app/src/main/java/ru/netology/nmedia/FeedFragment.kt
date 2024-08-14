@@ -1,4 +1,4 @@
-package ru.netology.nmedia.activity
+package ru.netology.nmedia
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,14 +9,10 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import ru.netology.nmedia.R
-import ru.netology.nmedia.OnInteractionListener
-import ru.netology.nmedia.PostsAdapter
 import ru.netology.nmedia.databinding.FragmentFeedBinding
-import ru.netology.nmedia.Post
 import ru.netology.nmedia.viewmodel.PostViewModel
 
-class FeedFragment : Fragment() {
+class FeedFragment : Fragment(R.layout.fragment_feed) {
 
     private val viewModel: PostViewModel by activityViewModels()
     private lateinit var adapter: PostsAdapter
