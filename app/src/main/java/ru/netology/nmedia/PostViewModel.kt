@@ -76,9 +76,9 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
         edited.value = edited.value?.copy(content = text)
     }
 
-    fun likeById(id: Long) {
+    fun likeById(id: Long, likedByMe: Boolean) {
         thread {
-            val postServer = repository.likeById(id)
+            val postServer = repository.likeById(id,likedByMe)
             _data.postValue(
                 FeedModel(
                     posts = (_data.value?.posts?.map {

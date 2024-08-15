@@ -28,7 +28,7 @@ class PostFragment : Fragment() {
         }
 
         override fun onLike(post: Post) {
-            viewModel.likeById(post.id)
+            viewModel.likeById(post.id, post.likedByMe)
         }
 
         override fun onRepost(post: Post) {
@@ -68,7 +68,7 @@ class PostFragment : Fragment() {
                     likes.isChecked = post.likedByMe
 
                     likes.setOnClickListener {
-                        viewModel.likeById(post.id)
+                        viewModel.likeById(post.id, post.likedByMe)
                     }
 
                     reposts.setOnClickListener {
