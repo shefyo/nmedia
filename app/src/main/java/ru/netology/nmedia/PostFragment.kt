@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.databinding.PostcardBinding
@@ -14,7 +15,7 @@ import ru.netology.nmedia.viewmodel.PostViewModel
 
 class PostFragment : Fragment() {
 
-    private val viewModel: PostViewModel by viewModels()
+    private val viewModel: PostViewModel by activityViewModels()
 
     private var onInteractionListener: OnInteractionListener? = object : OnInteractionListener {
         override fun onEdit(post: Post) {
