@@ -42,7 +42,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadPosts() {
-        _data.value = FeedModel(loading = true)
+        _data.postValue(FeedModel(loading = true))
 
         repository.getAllAsync(object: PostRepositoryInterface.NMediaCallback<List<Post>> {
             override fun onSuccess(posts: List<Post>) {
@@ -122,7 +122,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
         repository.removeByIdAsync(id, object : PostRepositoryInterface.NMediaCallback<Unit> {
             override fun onSuccess(result: Unit) {
-                _postDeleted.postValue(id)
+
             }
 
             override fun onError(e: Exception) {

@@ -27,7 +27,11 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
         adapter = PostsAdapter(object : OnInteractionListener {
             override fun onEdit(post: Post) {
                 viewModel.edit(post)
-                findNavController().navigate(R.id.action_feedFragment_to_editPostFragment)
+                val bundle = Bundle().apply {
+                    putLong(EditPostFragment.EXTRA_POST_ID, post.id)
+                    putString(EditPostFragment.EXTRA_POST_TEXT, post.content)
+                }
+                findNavController().navigate(R.id.action_feedFragment_to_editPostFragment, bundle)
             }
 
             override fun onLike(post: Post) {

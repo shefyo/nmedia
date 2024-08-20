@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import ru.netology.nmedia.databinding.FragmentEditPostBinding
@@ -34,9 +35,7 @@ class EditPostFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentEditPostBinding.inflate(inflater, container, false)
-        val viewModel: PostViewModel by viewModels(ownerProducer = ::requireParentFragment) {
-            PostViewModelFactory(requireActivity().application)
-        }
+        val viewModel: PostViewModel by activityViewModels()
 
         postText?.let {
             binding.content.setText(it)
