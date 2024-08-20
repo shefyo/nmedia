@@ -7,8 +7,7 @@ import ru.netology.nmedia.model.FeedModel
 import ru.netology.nmedia.repository.PostRepositoryImpl
 import ru.netology.nmedia.PostRepositoryInterface
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.io.IOException
-import kotlin.concurrent.thread
+import java.lang.Exception
 
 private val empty = Post(
     id = 0,
@@ -44,22 +43,30 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadPosts() {
         _data.value = FeedModel(loading = true)
-        thread {
-            try {
-                val posts = repository.getAll()
+
+        repository.getAllAsync(object: PostRepositoryInterface.NMediaCallback<List<Post>> {
+            override fun onSuccess(posts: List<Post>) {
                 _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
-            } catch (e: IOException) {
+            }
+
+            override fun onError(e: Exception) {
                 _data.postValue(FeedModel(error = true))
             }
-        }
+        })
     }
 
     fun save() {
-        edited.value?.let {
-            thread {
-                repository.save(it)
-                _postCreated.postValue(Unit)
-            }
+        edited.value?.let { post ->
+            repository.saveAsync(post, object : PostRepositoryInterface.NMediaCallback<Post> {
+                override fun onSuccess(result: Post) {
+                    _postCreated.postValue(Unit)
+                    loadPosts()
+                }
+
+                override fun onError(e: Exception) {
+                    _data.postValue(FeedModel(error = true))
+                }
+            })
         }
         edited.value = empty
     }
@@ -77,66 +84,91 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun likeById(id: Long, likedByMe: Boolean) {
-        thread {
-            val postServer = repository.likeById(id,likedByMe)
-            _data.postValue(
-                FeedModel(
-                    posts = (_data.value?.posts?.map {
-                        if (it.id == id) {
-                            postServer
-                        } else {
-                            it
-                        }
-                    } as List<Post>).orEmpty(),
-                    empty = (_data.value?.posts?: listOf()).isEmpty()
+        repository.likeByIdAsync(id, likedByMe, object : PostRepositoryInterface.NMediaCallback<Post> {
+            override fun onSuccess(result: Post) {
+                _data.postValue(
+                    FeedModel(
+                        posts = _data.value?.posts?.map {
+                            if (it.id == id) result else it
+                        }.orEmpty(),
+                        empty = (_data.value?.posts ?: listOf()).isEmpty()
+                    )
                 )
-            )
-        }
+            }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun repostById(id: Long) {
-        thread {
-            repository.repostById(id)
-            _post.postValue(repository.getPost(id))
-        }
+        repository.repostByIdAsync(id, object : PostRepositoryInterface.NMediaCallback<Post> {
+            override fun onSuccess(result: Post) {
+                _post.postValue(result)
+            }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun removeById(id: Long) {
-        thread {
-            val oldPosts = _data.value?.posts.orEmpty()
-            val updatedPosts = oldPosts.filter { it.id != id }
+        val oldPosts = _data.value?.posts.orEmpty()
+        val updatedPosts = oldPosts.filter { it.id != id }
 
-            _data.postValue(_data.value?.copy(posts = updatedPosts))
+        _data.postValue(_data.value?.copy(posts = updatedPosts))
 
-            try {
-                repository.removeById(id)
+        repository.removeByIdAsync(id, object : PostRepositoryInterface.NMediaCallback<Unit> {
+            override fun onSuccess(result: Unit) {
                 _postDeleted.postValue(id)
-            } catch (e: IOException) {
+            }
+
+            override fun onError(e: Exception) {
                 _data.postValue(_data.value?.copy(posts = oldPosts))
             }
-        }
+        })
     }
 
     fun getPostById(postId: Long) {
-        thread {
-            _post.postValue(repository.getPost(postId))
-        }
+        repository.getPostAsync(postId, object : PostRepositoryInterface.NMediaCallback<Post> {
+            override fun onSuccess(result: Post) {
+                _post.postValue(result)
+            }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun loadPost(id: Long) {
-        thread {
-            _post.postValue(repository.getPost(id))
-        }
+        repository.getPostAsync(id, object : PostRepositoryInterface.NMediaCallback<Post> {
+            override fun onSuccess(result: Post) {
+                _post.postValue(result)
+            }
+
+            override fun onError(e: Exception) {
+                _data.postValue(FeedModel(error = true))
+            }
+        })
     }
 
     fun changeContentAndSave(text: String) {
-        thread {
-            edited.value?.let {
-                if (it.content != text.trim()) {
-                    val updatedPost = it.copy(content = text)
-                    repository.save(updatedPost)
-                    _post.postValue(repository.getPost(it.id))
-                }
+        edited.value?.let { post ->
+            if (post.content != text.trim()) {
+                val updatedPost = post.copy(content = text)
+                repository.saveAsync(updatedPost, object : PostRepositoryInterface.NMediaCallback<Post> {
+                    override fun onSuccess(result: Post) {
+                        _post.postValue(result)
+                        loadPosts()
+                    }
+
+                    override fun onError(e: Exception) {
+                        _data.postValue(FeedModel(error = true))
+                    }
+                })
             }
         }
         edited.value = empty
