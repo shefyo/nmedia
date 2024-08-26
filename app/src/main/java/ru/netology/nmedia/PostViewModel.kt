@@ -19,7 +19,8 @@ private val empty = Post(
     countreposts = 0,
     countviews = 1,
     video = null,
-    repostedByMe = false
+    repostedByMe = false,
+    authorAvatar = ""
 )
 
 class PostViewModel(application: Application) : AndroidViewModel(application) {

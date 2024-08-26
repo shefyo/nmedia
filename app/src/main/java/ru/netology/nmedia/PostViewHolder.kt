@@ -5,6 +5,7 @@ import android.net.Uri
 import android.view.View
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import ru.netology.nmedia.databinding.PostcardBinding
 
 class PostViewHolder(
@@ -20,6 +21,10 @@ class PostViewHolder(
             countviews.text = post.countviews.toString()
             likes.text = formatCount(post.likes)
             reposts.text = formatCount(post.countreposts)
+            Glide.with(avatar.context)
+                .load("http://10.0.2.2:9999/avatars/${post.authorAvatar}")
+                .circleCrop()
+                .into(avatar)
             likes.isChecked = post.likedByMe
 
             root.setOnClickListener {

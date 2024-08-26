@@ -81,6 +81,7 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.fragment:fragment-ktx:1.8.1")
     implementation("androidx.compose.ui:ui-graphics")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation(platform("androidx.compose:compose-bom:2023.08.00"))
