@@ -24,6 +24,7 @@ class PostViewHolder(
             Glide.with(avatar.context)
                 .load("http://10.0.2.2:9999/avatars/${post.authorAvatar}")
                 .circleCrop()
+                .timeout(10_000)
                 .into(avatar)
             likes.isChecked = post.likedByMe
 
