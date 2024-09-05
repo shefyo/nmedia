@@ -4,10 +4,9 @@ import android.app.Application
 import androidx.lifecycle.*
 import ru.netology.nmedia.Post
 import ru.netology.nmedia.model.FeedModel
-import ru.netology.nmedia.repository.PostRepositoryImpl
+import ru.netology.nmedia.PostRepositoryImpl
 import ru.netology.nmedia.PostRepositoryInterface
 import ru.netology.nmedia.util.SingleLiveEvent
-import java.lang.Exception
 
 private val empty = Post(
     id = 0,
@@ -50,7 +49,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _data.postValue(FeedModel(posts = posts, empty = posts.isEmpty()))
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(e: Throwable) {
                 _data.postValue(FeedModel(error = true))
             }
         })
@@ -64,7 +63,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                     loadPosts()
                 }
 
-                override fun onError(e: Exception) {
+                override fun onError(e: Throwable) {
                     _data.postValue(FeedModel(error = true))
                 }
             })
@@ -97,19 +96,19 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(e: Throwable) {
                 _data.postValue(FeedModel(error = true))
             }
         })
     }
 
     fun repostById(id: Long) {
-        repository.repostByIdAsync(id, object : PostRepositoryInterface.NMediaCallback<Post> {
+        repository.repostByIdAsync(id, repostedByMe = true, object : PostRepositoryInterface.NMediaCallback<Post> {
             override fun onSuccess(result: Post) {
                 _post.postValue(result)
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(e: Throwable) {
                 _data.postValue(FeedModel(error = true))
             }
         })
@@ -126,7 +125,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
 
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(e: Throwable) {
                 _data.postValue(_data.value?.copy(posts = oldPosts))
             }
         })
@@ -138,7 +137,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _post.postValue(result)
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(e: Throwable) {
                 _data.postValue(FeedModel(error = true))
             }
         })
@@ -150,7 +149,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                 _post.postValue(result)
             }
 
-            override fun onError(e: Exception) {
+            override fun onError(e: Throwable) {
                 _data.postValue(FeedModel(error = true))
             }
         })
@@ -166,7 +165,7 @@ class PostViewModel(application: Application) : AndroidViewModel(application) {
                         loadPosts()
                     }
 
-                    override fun onError(e: Exception) {
+                    override fun onError(e: Throwable) {
                         _data.postValue(FeedModel(error = true))
                     }
                 })
